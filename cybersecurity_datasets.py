@@ -251,19 +251,35 @@ def load_toniot(
   return (*data, ds_name)
 
 
-def load_nslkdd(return_fnames=True):
+def load_nslkdd(ds_path='datasets/nsl-kdd', return_fnames=True, diff_level=10):
 
-  ds_path = 'datasets/nsl-kdd'
   d_train = np.loadtxt(f"{ds_path}/KDDTrain+.txt", delimiter=',', dtype=object)
   y_train = d_train[:, -2]
-  trainY_diff = d_train[:, -1]
+  trainY_diff = d_train[:, -1].astype(np.int32)
   X_train = d_train[:, :-2]
 
 
   d_test = np.loadtxt(f"{ds_path}/KDDTest+.txt", delimiter=',', dtype=object)
   y_test = d_test[:, -2]
-  testY_diff = d_test[:, -1]
+  testY_diff = d_test[:, -1].astype(np.int32)
   X_test = d_test[:, :-2]
+
+
+  if diff_level > 0:
+    train_mask = np.where(trainY_diff > 21-diff_level)[0]
+    test_mask = np.where(testY_diff > 21-diff_level)[0]
+
+    y_train = y_train[train_mask]
+    trainY_diff = trainY_diff[train_mask]
+    X_train = X_train[train_mask]
+
+    y_test = y_test[test_mask]
+    testY_diff = testY_diff[test_mask]
+    X_test = X_test[test_mask]
+
+  # print(len(X_train))
+  # print(len(X_test))
+  # exit()
 
   for c in range(X_train.shape[1]):
     try:
