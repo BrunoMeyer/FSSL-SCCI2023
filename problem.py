@@ -24,6 +24,9 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import Normalizer
 
+import imblearn
+# from imblearn.under_sampling import RandomUnderSampler
+
 class SSLFLProblem(object):
   def __init__(self, clients_dataX, trainX, trainY, testX, testY, clients_dataY=None):
     self.clients_dataX = clients_dataX
@@ -35,7 +38,19 @@ class SSLFLProblem(object):
 
     self.data_type = type(self.trainX[0][0])
     self.input_shape = self.trainX.shape[1]
-    self.num_classes = len(set(self.trainY))
+
+    total_y = set()
+    if not (clients_dataY is None):
+      for x in clients_dataY:
+        total_y = total_y.union(set(list(x)))
+    
+    if not (trainY is None):
+      total_y = total_y.union(set(list(trainY)))
+    if not (testY is None):
+      total_y = total_y.union(set(list(testY)))
+
+    # self.num_classes = len(set(self.trainY))
+    self.num_classes = len(set(total_y))
 
   def report_metrics(self, ssl_fl_solution):
     y_pred = ssl_fl_solution.predict(self.testX)
@@ -116,16 +131,33 @@ class RandomGeneratedProblem(SSLFLProblem):
 
 class NSLKDDProblem(SSLFLProblem):
   def __init__(self, input_file):
-    arg_test = [
-      {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.01 , 'drop_cols': ['type', 'label', 'ts', 'src_port', 'dst_port']},
-      # {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.8 , 'drop_cols': ['type', 'label', 'ts', 'src_port', 'dst_port']},
-    ]
+    
+    # data_set_name = 'toniot'
+    data_set_name = 'botiot'
+    # data_set_name = 'nsl-kdd'
+
+    if data_set_name == 'toniot':
+      arg_test = [
+        {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.01 , 'drop_cols': ['type', 'label', 'ts', 'src_port', 'dst_port']},
+        # {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.8 , 'drop_cols': ['type', 'label', 'ts', 'src_port', 'dst_port']},
+      ]
+    
+    if data_set_name == 'botiot':
+      arg_test = [
+        {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.01 , 'drop_cols': ['sport', 'dport', 'category', 'subcategory', 'pkSeqID']},
+      ]
+    
+    if data_set_name == 'nsl-kdd':
+      arg_test = [
+        {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.01 , 'drop_cols': ['sport', 'dport', 'category', 'subcategory', 'pkSeqID']},
+      ]
     
     # n_clients = 50
     n_clients = 10
     random_seed = 0
 
-    data_set_name = 'toniot'
+
+    
     args = arg_test[0]
 
     ton_args = arg_test[0]
@@ -158,17 +190,40 @@ class NSLKDDProblem(SSLFLProblem):
 
     if data_set_name == 'toniot':
       trainX, trainY, testX, testY, feature_names, ds_name = load_toniot(input_file, **ton_args_copy)
+      test_size_rate = 0.0009
     
     if data_set_name == 'botiot':
-      trainX, trainY, testX, testY, feature_names, ds_name = load_botiot(
-        args.input_file, **ton_args_copy)
+      trainX, trainY, testX, testY, feature_names, ds_name = load_botiot(input_file, **ton_args_copy)
+      test_size_rate = 0.0009
+
+
+      undersample_strategy_dict = {}
+      for y in set(list(trainY)):
+        # undersample_strategy_dict[y] = int(sum(trainY==y)/10)
+        undersample_strategy_dict[y] = int(sum(trainY==y)/100)
+
+      undersample = imblearn.under_sampling.RandomUnderSampler(sampling_strategy=undersample_strategy_dict, random_state=0)
+      trainX, trainY = undersample.fit_resample(trainX, trainY)
+
+      undersample_strategy_dict = {}
+      for y in set(list(testY)):
+        # undersample_strategy_dict[y] = int(sum(testY==y)/10)
+        undersample_strategy_dict[y] = int(sum(testY==y)/100)
+      undersample = imblearn.under_sampling.RandomUnderSampler(sampling_strategy=undersample_strategy_dict, random_state=0)
+
+      testX, testY = undersample.fit_resample(testX, testY)
+      
 
     if data_set_name == 'nsl-kdd':
-      trainX, trainY, testX, testY, feature_names, ds_name = load_nslkdd()
+      trainX, trainY, testX, testY, feature_names, ds_name = load_nslkdd(ds_path=input_file)
+      # print(len(trainX))
+      test_size_rate = 0.2
+      # print(len(testX))
+      
 
     data_augmentation = None
-    dirichlet_beta = 100
-    # dirichlet_beta = 0.1
+    # dirichlet_beta = 100
+    dirichlet_beta = 0.1
 
     src_ip_idx = None
     dst_ip_idx = None
@@ -209,9 +264,28 @@ class NSLKDDProblem(SSLFLProblem):
     trainY = le.transform(trainY)
     testY = le.transform(testY)
 
+    # print(len(trainX))
+    # print(len(testX))
+    
+    # # new_array = [tuple(row) for row in trainX]
+    # # uniques, idx = np.unique(new_array, return_index=True)
+    # uniques, idx = np.unique(trainX.astype(np.float32), axis=0, return_index=True)
+    # trainX = uniques
+    # trainY = trainY[idx]
+
+    # # new_array = [tuple(row) for row in testX]
+    # # uniques, idx = np.unique(new_array, return_index=True)
+    # uniques, idx = np.unique(testX.astype(np.float32), axis=0, return_index=True)
+    # testX = uniques
+    # testY = testY[idx]
+
+    # print(len(trainX))
+    # print(len(testX))
+    # exit()
+
 
     client_dataX, server_dataX, client_dataY, server_dataY = train_test_split(
-    trainX, trainY, test_size=0.0009, random_state=42,
+    trainX, trainY, test_size=test_size_rate, random_state=42,
     stratify=trainY,
     shuffle=True
     )
@@ -239,38 +313,7 @@ class NSLKDDProblem(SSLFLProblem):
 
     SSLFLProblem.__init__(self, fl_dataX, server_dataX, server_dataY, testX, testY, clients_dataY=fl_dataY)
     return
-
-
     
-    X, y = make_classification(n_samples=1200, n_features=10,
-                               n_classes=5,
-                                n_informative=4, n_redundant=0,
-                                random_state=0, shuffle=False)
-    
-    clients_dataX = []
-    clients_dataY = []
-
-    skf = StratifiedKFold(n_splits=n_clients+2)
-    
-    for i, (train_index, test_index) in enumerate(skf.split(X, y)):
-
-      clients_dataX.append(X[test_index])
-      clients_dataY.append(y[test_index])
-    
-
-    trainX = clients_dataX[0]
-    trainY = clients_dataY[0]
-    
-    testX = clients_dataX[1]
-    testY = clients_dataY[1]
-    
-    clients_dataX = clients_dataX[2:]
-    clients_dataY = clients_dataY[2:]
-    
-
-    
-
-    SSLFLProblem.__init__(self, clients_dataX, trainX, trainY, testX, testY, clients_dataY=clients_dataY)
 
 class SSLFLSolution(object):
   def __init__(self, ssl_fl_problem):
@@ -429,7 +472,7 @@ class SimpleSSLFLSolution(SSLFLSolution):
       final_model = self.create_model_dl(input_shape, num_classes)
       
       # n_rounds = 50
-      # n_rounds = 10
+      # n_rounds = 10 # BRACIS Experiment
       # n_rounds = 3
       # n_rounds = 1
       n_rounds = 0
@@ -608,8 +651,6 @@ def main():
   # s.report_metrics()
   s.report_metrics_on_cross_val()
 
-
-  exit()
 
   
 
