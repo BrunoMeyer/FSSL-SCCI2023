@@ -1,0 +1,426 @@
+NSLKDDProblem
+################################################################################
+
+\SimpleSSLFLSolution
+/usr/local/lib/python3.6/dist-packages/sklearn/model_selection/_split.py:668: UserWarning: The least populated class in y has only 1 members, which is less than n_splits=10.
+  % (min_groups, self.n_splits)), UserWarning)
+Fold 0
+2023-05-03 10:55:53.507574: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'libcudnn.so.8'; dlerror: libcudnn.so.8: cannot open shared object file: No such file or directory; LD_LIBRARY_PATH: /usr/local/cuda/lib64
+2023-05-03 10:55:53.507596: W tensorflow/core/common_runtime/gpu/gpu_device.cc:1835] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+2023-05-03 10:55:53.507886: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-05-03 10:55:53.786108: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:185] None of the MLIR Optimization Passes are enabled (registered 2)
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.98      0.93      0.96       654
+           1       0.00      0.00      0.00       342
+           2       0.00      0.00      0.00         3
+           4       0.97      0.88      0.92       667
+           5       0.70      0.99      0.82        83
+           6       1.00      1.00      1.00         1
+           7       0.93      0.96      0.94       750
+           8       0.75      0.67      0.71         9
+          10       0.86      0.08      0.15       147
+          11       0.95      0.90      0.92       747
+          13       1.00      1.00      1.00     11603
+          14       0.89      0.90      0.89       318
+          15       0.95      0.96      0.96     20579
+          16       0.86      0.18      0.29        68
+          17       0.99      0.91      0.95       653
+          18       0.88      0.99      0.94       571
+          19       0.00      0.00      0.00         3
+          20       0.55      0.39      0.46       276
+          21       0.84      0.94      0.89      1282
+          22       0.96      0.94      0.95      1075
+          23       0.30      0.86      0.45       287
+          24       0.99      0.80      0.88       166
+          25       0.00      0.00      0.00         1
+          26       1.00      0.16      0.27        63
+          27       0.96      0.83      0.89       593
+          28       0.00      0.00      0.00         1
+
+    accuracy                           0.94     40942
+   macro avg       0.70      0.63      0.62     40942
+weighted avg       0.94      0.94      0.94     40942
+
+Fold 1
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.94      0.98      0.96       654
+           1       0.00      0.00      0.00       342
+           2       0.00      0.00      0.00         3
+           3       0.00      0.00      0.00         1
+           4       0.98      0.83      0.90       668
+           5       0.86      0.92      0.89        83
+           6       0.00      0.00      0.00         2
+           7       0.99      0.97      0.98       750
+           8       0.86      0.67      0.75         9
+          10       0.00      0.00      0.00       147
+          11       0.95      0.96      0.95       747
+          13       1.00      1.00      1.00     11603
+          14       0.79      0.96      0.86       318
+          15       0.95      0.95      0.95     20579
+          16       0.66      0.59      0.62        68
+          17       0.98      0.98      0.98       653
+          18       0.89      0.92      0.91       571
+          19       0.00      0.00      0.00         3
+          20       0.45      0.76      0.56       275
+          21       0.92      0.80      0.85      1282
+          22       0.94      0.96      0.95      1075
+          23       0.28      0.87      0.43       287
+          24       0.97      0.81      0.89       166
+          26       0.91      0.16      0.27        63
+          27       0.98      0.82      0.89       592
+          28       0.00      0.00      0.00         1
+
+    accuracy                           0.94     40942
+   macro avg       0.63      0.61      0.60     40942
+weighted avg       0.94      0.94      0.94     40942
+
+Fold 2
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.95      0.99      0.97       654
+           1       0.00      0.00      0.00       342
+           2       0.00      0.00      0.00         3
+           3       0.00      0.00      0.00         1
+           4       0.97      0.79      0.87       668
+           5       0.90      0.98      0.94        83
+           6       0.00      0.00      0.00         2
+           7       0.95      0.98      0.96       751
+           8       0.64      0.78      0.70         9
+          10       0.00      0.00      0.00       147
+          11       0.92      0.97      0.94       747
+          13       1.00      0.99      1.00     11603
+          14       0.93      0.96      0.94       317
+          15       0.96      0.97      0.96     20579
+          16       0.75      0.26      0.39        68
+          17       0.97      0.96      0.96       653
+          18       0.94      0.99      0.96       571
+          19       0.00      0.00      0.00         3
+          20       0.43      0.35      0.38       275
+          21       0.85      0.89      0.87      1282
+          22       0.93      0.94      0.94      1075
+          23       0.41      0.86      0.56       287
+          24       0.98      0.90      0.94       166
+          25       0.00      0.00      0.00         1
+          26       1.00      0.02      0.03        63
+          27       0.93      0.90      0.91       592
+          28       0.00      0.00      0.00         1
+
+    accuracy                           0.95     40943
+   macro avg       0.61      0.57      0.56     40943
+weighted avg       0.94      0.95      0.95     40943
+
+Fold 3
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.97      0.97      0.97       654
+           1       0.00      0.00      0.00       342
+           2       0.00      0.00      0.00         3
+           3       0.00      0.00      0.00         1
+           4       0.98      0.84      0.90       668
+           5       0.92      0.81      0.86        83
+           6       0.00      0.00      0.00         2
+           7       0.96      0.96      0.96       751
+           8       0.64      0.78      0.70         9
+          10       0.00      0.00      0.00       148
+          11       0.95      0.95      0.95       747
+          13       1.00      1.00      1.00     11604
+          14       0.90      0.92      0.91       317
+          15       0.95      0.94      0.95     20580
+          16       1.00      0.47      0.64        68
+          17       0.99      0.88      0.93       652
+          18       0.86      0.99      0.92       571
+          19       0.50      0.50      0.50         2
+          20       0.55      0.39      0.45       275
+          21       0.79      0.93      0.85      1282
+          22       0.99      0.88      0.93      1074
+          23       0.22      0.87      0.35       287
+          24       0.99      0.72      0.83       166
+          25       0.00      0.00      0.00         1
+          26       0.59      0.56      0.57        63
+          27       0.96      0.93      0.95       592
+          28       0.00      0.00      0.00         1
+
+    accuracy                           0.94     40943
+   macro avg       0.62      0.60      0.60     40943
+weighted avg       0.94      0.94      0.94     40943
+
+Fold 4
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.96      0.99      0.97       655
+           1       0.00      0.00      0.00       342
+           2       0.00      0.00      0.00         3
+           3       0.00      0.00      0.00         1
+           4       0.99      0.84      0.91       668
+           5       0.86      1.00      0.92        83
+           6       0.00      0.00      0.00         2
+           7       0.95      0.96      0.96       751
+           8       0.00      0.00      0.00         9
+          10       0.59      0.41      0.49       148
+          11       0.96      0.97      0.96       747
+          13       1.00      1.00      1.00     11604
+          14       0.95      0.89      0.92       317
+          15       0.96      0.94      0.95     20580
+          16       0.69      0.37      0.49        67
+          17       1.00      0.93      0.96       652
+          18       0.96      0.99      0.98       570
+          19       0.00      0.00      0.00         2
+          20       0.36      0.78      0.49       275
+          21       0.92      0.70      0.79      1282
+          22       0.85      0.98      0.91      1074
+          23       0.22      0.85      0.35       287
+          24       0.93      0.79      0.85       167
+          25       0.00      0.00      0.00         1
+          26       1.00      0.14      0.25        63
+          27       0.97      0.86      0.91       592
+          28       0.00      0.00      0.00         1
+
+    accuracy                           0.94     40943
+   macro avg       0.60      0.57      0.56     40943
+weighted avg       0.95      0.94      0.94     40943
+
+Fold 5
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.96      0.99      0.98       655
+           1       0.64      0.77      0.70       342
+           2       0.00      0.00      0.00         3
+           3       0.00      0.00      0.00         1
+           4       0.86      0.90      0.88       668
+           5       0.77      0.86      0.81        83
+           6       0.00      0.00      0.00         2
+           7       0.96      0.96      0.96       751
+           8       0.70      0.78      0.74         9
+          10       0.66      0.43      0.52       148
+          11       0.93      0.97      0.95       747
+          13       1.00      1.00      1.00     11604
+          14       0.90      0.94      0.92       318
+          15       0.98      0.97      0.98     20580
+          16       0.86      0.63      0.72        67
+          17       0.97      0.97      0.97       652
+          18       1.00      0.97      0.98       570
+          19       0.25      0.50      0.33         2
+          20       0.29      0.43      0.34       275
+          21       0.84      0.65      0.73      1281
+          22       0.79      0.99      0.88      1074
+          23       0.84      0.87      0.86       287
+          24       0.95      0.89      0.92       167
+          25       0.00      0.00      0.00         1
+          26       0.33      0.46      0.38        63
+          27       0.92      0.90      0.91       592
+          28       0.00      0.00      0.00         1
+
+    accuracy                           0.96     40943
+   macro avg       0.64      0.66      0.65     40943
+weighted avg       0.96      0.96      0.96     40943
+
+Fold 6
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.87      0.99      0.93       655
+           1       0.00      0.00      0.00       342
+           2       0.00      0.00      0.00         2
+           3       0.00      0.00      0.00         1
+           4       0.86      0.90      0.88       668
+           5       0.89      0.96      0.92        83
+           6       0.00      0.00      0.00         2
+           7       0.92      0.98      0.95       751
+           8       0.17      0.11      0.13         9
+          10       0.00      0.00      0.00       148
+          11       0.70      0.91      0.79       747
+          13       0.99      1.00      1.00     11604
+          14       0.95      0.92      0.93       318
+          15       0.96      0.96      0.96     20580
+          16       0.52      0.61      0.56        67
+          17       0.90      0.96      0.93       652
+          18       0.96      0.97      0.96       570
+          19       0.00      0.00      0.00         3
+          20       0.78      0.25      0.38       275
+          21       0.84      0.84      0.84      1281
+          22       0.82      0.97      0.89      1074
+          23       0.95      0.85      0.90       287
+          24       0.69      0.83      0.75       167
+          25       0.00      0.00      0.00         1
+          26       1.00      0.27      0.42        63
+          27       0.90      0.87      0.88       592
+          28       0.00      0.00      0.00         1
+
+    accuracy                           0.95     40943
+   macro avg       0.58      0.56      0.56     40943
+weighted avg       0.94      0.95      0.94     40943
+
+Fold 7
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.70      0.98      0.81       654
+           1       0.57      0.01      0.02       342
+           2       0.00      0.00      0.00         2
+           3       0.00      0.00      0.00         1
+           4       0.93      0.85      0.89       668
+           5       0.80      0.94      0.86        83
+           6       0.00      0.00      0.00         2
+           7       0.98      0.96      0.97       751
+           8       0.00      0.00      0.00         9
+          10       0.80      0.34      0.48       148
+          11       0.71      0.96      0.81       747
+          13       1.00      1.00      1.00     11604
+          14       0.95      0.87      0.90       318
+          15       0.95      0.96      0.96     20579
+          16       0.90      0.52      0.66        67
+          17       0.92      0.97      0.94       652
+          18       0.96      0.95      0.95       570
+          19       0.00      0.00      0.00         3
+          20       0.58      0.34      0.43       276
+          21       0.85      0.81      0.83      1281
+          22       0.85      0.97      0.91      1075
+          23       0.98      0.61      0.75       287
+          24       0.65      0.99      0.79       167
+          25       0.00      0.00      0.00         1
+          26       0.25      0.27      0.26        63
+          27       0.93      0.85      0.89       592
+          28       0.00      0.00      0.00         1
+
+    accuracy                           0.94     40943
+   macro avg       0.60      0.56      0.56     40943
+weighted avg       0.94      0.94      0.94     40943
+
+Fold 8
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.66      0.98      0.79       654
+           1       0.00      0.00      0.00       342
+           2       0.00      0.00      0.00         2
+           3       0.00      0.00      0.00         1
+           4       0.84      0.94      0.89       668
+           5       0.82      0.80      0.81        82
+           6       0.00      0.00      0.00         2
+           7       0.75      0.97      0.85       750
+           8       0.86      0.67      0.75         9
+          10       0.84      0.42      0.56       148
+          11       0.70      0.93      0.80       747
+          13       0.99      1.00      1.00     11604
+          14       0.96      0.27      0.42       318
+          15       0.96      0.94      0.95     20579
+          16       0.73      0.36      0.48        67
+          17       0.88      0.87      0.88       653
+          18       0.95      0.99      0.97       571
+          19       0.00      0.00      0.00         3
+          20       0.41      0.36      0.39       276
+          21       0.82      0.77      0.79      1281
+          22       0.83      1.00      0.91      1075
+          23       0.63      0.86      0.73       287
+          24       0.75      0.79      0.77       167
+          25       0.00      0.00      0.00         1
+          26       1.00      0.16      0.27        63
+          27       0.85      0.97      0.91       592
+          28       0.00      0.00      0.00         1
+
+    accuracy                           0.93     40943
+   macro avg       0.60      0.56      0.55     40943
+weighted avg       0.93      0.93      0.93     40943
+
+Fold 9
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+/usr/local/lib/python3.6/dist-packages/sklearn/metrics/_classification.py:1248: UndefinedMetricWarning: Recall and F-score are ill-defined and being set to 0.0 in labels with no true samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+              precision    recall  f1-score   support
+
+           0       0.67      1.00      0.80       654
+           1       1.00      0.01      0.02       342
+           2       0.00      0.00      0.00         3
+           3       0.00      0.00      0.00         1
+           4       0.89      0.95      0.92       667
+           5       0.92      0.89      0.91        82
+           6       0.14      1.00      0.25         1
+           7       0.72      0.85      0.78       750
+           8       0.70      0.78      0.74         9
+          10       0.91      0.14      0.24       147
+          11       0.68      0.97      0.80       747
+          13       1.00      1.00      1.00     11604
+          14       0.98      0.26      0.41       318
+          15       0.96      0.95      0.95     20579
+          16       0.89      0.49      0.63        68
+          17       0.82      0.85      0.83       653
+          18       0.98      1.00      0.99       571
+          19       0.00      0.00      0.00         3
+          20       0.50      0.34      0.41       276
+          21       0.84      0.79      0.81      1282
+          22       0.89      0.98      0.93      1075
+          23       0.70      0.88      0.78       288
+          24       0.53      0.93      0.68       166
+          25       0.00      0.00      0.00         1
+          26       0.48      0.43      0.45        63
+          27       0.91      0.87      0.89       593
+          28       0.00      0.00      0.00         0
+
+    accuracy                           0.93     40943
+   macro avg       0.63      0.61      0.56     40943
+weighted avg       0.94      0.93      0.93     40943
+

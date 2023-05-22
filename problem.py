@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
  
 import tensorflow as tf
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras import backend as K
 
 
 from fed_bench_utils import partition_data
@@ -24,8 +25,15 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import Normalizer
 
+from sklearn.manifold import TSNE
+
 import imblearn
 # from imblearn.under_sampling import RandomUnderSampler
+
+import matplotlib.pyplot as plt
+
+import collections
+
 
 class SSLFLProblem(object):
   def __init__(self, clients_dataX, trainX, trainY, testX, testY, clients_dataY=None):
@@ -58,12 +66,45 @@ class SSLFLProblem(object):
 
     print(report)
 
+  def plot_tsne(self, ssl_fl_solution, figname=None):
+    latent_vectors_train = ssl_fl_solution.get_latent_space(self.trainX)
+    latent_vectors_test = ssl_fl_solution.get_latent_space(self.testX)
+    
+    emb_test = TSNE(n_components=2).fit_transform(latent_vectors_test)
+    fig, ax = plt.subplots(1,1, figsize=(9,9))
+    for y in set(list(self.testY)):
+      y_realname = self.le.inverse_transform([y])[0]
+      ax.scatter(emb_test[self.testY==y, 0], emb_test[self.testY==y, 1], label=y_realname, alpha=0.2)
+    ax.legend()
+
+    if figname is None:
+      plt.show()
+    else:
+      fig.savefig('test_'+figname)
+    
+    emb_train = TSNE(n_components=2).fit_transform(latent_vectors_train)
+    fig, ax = plt.subplots(1,1, figsize=(9,9))
+    for y in set(list(self.trainY)):
+      y_realname = self.le.inverse_transform([y])[0]
+      ax.scatter(emb_train[self.trainY==y, 0], emb_train[self.trainY==y, 1], label=y_realname, alpha=0.2)
+    ax.legend()
+    
+    
+    if figname is None:
+      plt.show()
+    else:
+      fig.savefig('train_'+figname)
+    
+
+
   def report_metrics_on_cross_val(self, solution, n_folds=10):
 
     total_dataX = np.concatenate((self.trainX, self.testX))
     total_dataY = np.concatenate((self.trainY, self.testY))
 
-    skf = StratifiedKFold(n_splits=n_folds)
+    # skf = StratifiedKFold(n_splits=n_folds)
+    skf = StratifiedKFold(n_splits=n_folds, random_state=0, shuffle=True)
+
 
     old_trainX = self.trainX
     old_trainY = self.trainY
@@ -81,6 +122,99 @@ class SSLFLProblem(object):
       
       solution.create()
       solution.report_metrics()
+
+    self.trainX = old_trainX
+    self.trainY = old_trainY
+    self.testX = old_testX
+    self.testY = old_testY
+
+
+  def report_train_test_stats_cross_val(self, n_folds=10):
+
+    total_dataX = np.concatenate((self.trainX, self.testX))
+    total_dataY = np.concatenate((self.trainY, self.testY))
+
+    # skf = StratifiedKFold(n_splits=n_folds)
+    skf = StratifiedKFold(n_splits=n_folds, random_state=0, shuffle=True)
+
+
+    old_trainX = self.trainX
+    old_trainY = self.trainY
+    old_testX = self.testX
+    old_testY = self.testY
+    
+    all_c = set(list(old_trainY)+list(old_testY))
+    all_c = self.le.inverse_transform(list(all_c))
+
+    dict_class_train_folds = {c:[] for c in all_c}
+    dict_class_test_folds = {c:[] for c in all_c}
+    
+    total_train_folds = []
+    total_test_folds = []
+    for i, (test_index, train_index) in enumerate(skf.split(total_dataX, total_dataY)): # test index is bigger (inverted leave one out)
+      self.trainX = total_dataX[train_index]
+      self.trainY = total_dataY[train_index]
+      self.testX = total_dataX[test_index]
+      self.testY = total_dataY[test_index]
+
+      total_train_folds.append(len(self.trainY))
+      total_test_folds.append(len(self.testY))
+
+      print(f"Fold {i}")
+      trainY = self.le.inverse_transform(self.trainY)
+      testY = self.le.inverse_transform(self.testY)
+      dclass_train = collections.Counter(trainY)
+      for c in dclass_train:
+        dict_class_train_folds[c].append(dclass_train[c])
+
+      dclass_test = collections.Counter(testY)      
+      for c in dclass_test:
+        dict_class_test_folds[c].append(dclass_test[c])
+    
+    print("Average train test: {}".format(np.mean(total_train_folds)))
+    print("Average test test: {}".format(np.mean(total_test_folds)))
+
+
+    print("Instances per class (train)")
+    for c in all_c:
+      print('{:<8}\t{:d}'.format(c, int(np.mean(dict_class_train_folds[c]))))
+
+    print("Instances per class (test)")
+    for c in all_c:
+      print('{:<8}\t{:d}'.format(c, int(np.mean(dict_class_test_folds[c]))))
+
+
+    self.trainX = old_trainX
+    self.trainY = old_trainY
+    self.testX = old_testX
+    self.testY = old_testY
+
+  
+  def plot_tsne_on_cross_val(self, solution, n_folds=10):
+
+    total_dataX = np.concatenate((self.trainX, self.testX))
+    total_dataY = np.concatenate((self.trainY, self.testY))
+
+    # skf = StratifiedKFold(n_splits=n_folds)
+    skf = StratifiedKFold(n_splits=n_folds, random_state=0, shuffle=True)
+
+
+    old_trainX = self.trainX
+    old_trainY = self.trainY
+    old_testX = self.testX
+    old_testY = self.testY
+    
+    
+    for i, (test_index, train_index) in enumerate(skf.split(total_dataX, total_dataY)): # test index is bigger (inverted leave one out)
+      self.trainX = total_dataX[train_index]
+      self.trainY = total_dataY[train_index]
+      self.testX = total_dataX[test_index]
+      self.testY = total_dataY[test_index]
+
+      print(f"Fold {i}")
+      
+      solution.create()
+      self.plot_tsne(solution, figname=f"{self.data_set_name}_fold_{i}_{solution.name}.pdf")
 
     self.trainX = old_trainX
     self.trainY = old_trainY
@@ -133,8 +267,10 @@ class NSLKDDProblem(SSLFLProblem):
   def __init__(self, input_file):
     
     # data_set_name = 'toniot'
-    data_set_name = 'botiot'
-    # data_set_name = 'nsl-kdd'
+    # data_set_name = 'botiot'
+    data_set_name = 'nsl-kdd'
+
+    self.data_set_name = data_set_name
 
     if data_set_name == 'toniot':
       arg_test = [
@@ -197,13 +333,13 @@ class NSLKDDProblem(SSLFLProblem):
       test_size_rate = 0.0009
 
 
-      undersample_strategy_dict = {}
-      for y in set(list(trainY)):
-        # undersample_strategy_dict[y] = int(sum(trainY==y)/10)
-        undersample_strategy_dict[y] = int(sum(trainY==y)/100)
+      # undersample_strategy_dict = {}
+      # for y in set(list(trainY)):
+      #   # undersample_strategy_dict[y] = int(sum(trainY==y)/10)
+      #   undersample_strategy_dict[y] = int(sum(trainY==y)/100)
 
-      undersample = imblearn.under_sampling.RandomUnderSampler(sampling_strategy=undersample_strategy_dict, random_state=0)
-      trainX, trainY = undersample.fit_resample(trainX, trainY)
+      # undersample = imblearn.under_sampling.RandomUnderSampler(sampling_strategy=undersample_strategy_dict, random_state=0)
+      # trainX, trainY = undersample.fit_resample(trainX, trainY)
 
       undersample_strategy_dict = {}
       for y in set(list(testY)):
@@ -217,9 +353,20 @@ class NSLKDDProblem(SSLFLProblem):
     if data_set_name == 'nsl-kdd':
       trainX, trainY, testX, testY, feature_names, ds_name = load_nslkdd(ds_path=input_file)
       # print(len(trainX))
-      test_size_rate = 0.2
+      # test_size_rate = 0.2
       # print(len(testX))
-      
+      test_size_rate = 0.0009
+      # test_size_rate = 0.009
+
+      undersample_strategy_dict = {}
+      for y in set(list(testY)):
+        # undersample_strategy_dict[y] = int(sum(testY==y)/10)
+        undersample_strategy_dict[y] = int(sum(testY==y)/4)
+      undersample = imblearn.under_sampling.RandomUnderSampler(sampling_strategy=undersample_strategy_dict, random_state=0)
+
+
+      testX, testY = undersample.fit_resample(testX, testY)
+    
 
     data_augmentation = None
     # dirichlet_beta = 100
@@ -247,6 +394,16 @@ class NSLKDDProblem(SSLFLProblem):
       trainX = trainX.astype(np.float32)
       testX = testX.astype(np.float32)
 
+
+    print('Dataset name: {}'.format(data_set_name))
+    print('Max trainX value: {}'.format(np.max(trainX)))
+    print('Max testX value: {}'.format(np.max(testX)))
+    print('Total classes train: {}'.format(len(set(list(trainY)))))
+    print('Total classes test: {}'.format(len(set(list(testY)))))
+    print('Total instances train: {}'.format(len(trainY)))
+    print('Total instances test: {}'.format(len(testY)))
+    print('Total instances: {}'.format(len(testY) + len(trainY)))
+      
     # scaler = MinMaxScaler()
     # scaler.fit(np.concatenate((trainX, testX)))
     # trainX = scaler.transform(trainX)
@@ -263,6 +420,14 @@ class NSLKDDProblem(SSLFLProblem):
     le.fit(np.concatenate((trainY, testY)))
     trainY = le.transform(trainY)
     testY = le.transform(testY)
+    self.le = le
+
+    # convert_dict = {}
+    # for y in set(list(testY)+list(trainY)):
+    #   convert_dict[y] = le.inverse_transform([y])[0]
+    
+    # print(convert_dict)
+    # exit()
 
     # print(len(trainX))
     # print(len(testX))
@@ -279,9 +444,7 @@ class NSLKDDProblem(SSLFLProblem):
     # testX = uniques
     # testY = testY[idx]
 
-    # print(len(trainX))
-    # print(len(testX))
-    # exit()
+    
 
 
     client_dataX, server_dataX, client_dataY, server_dataY = train_test_split(
@@ -310,6 +473,10 @@ class NSLKDDProblem(SSLFLProblem):
     fl_dataX = [trainX[d[4][i]] for i in d[4]]
     fl_dataY = [trainY[d[4][i]] for i in d[4]]
 
+    # print([len(x) for x in fl_dataX])
+    # print(len(server_dataX))
+    # print(len(testX))
+    # exit()
 
     SSLFLProblem.__init__(self, fl_dataX, server_dataX, server_dataY, testX, testY, clients_dataY=fl_dataY)
     return
@@ -329,6 +496,9 @@ class SSLFLSolution(object):
   def report_metrics_on_cross_val(self, n_folds = 10):
     self.ssl_fl_problem.report_metrics_on_cross_val(self, n_folds=n_folds)
 
+  def plot_tsne_on_cross_val(self, n_folds = 10):
+    self.ssl_fl_problem.plot_tsne_on_cross_val(self, n_folds=n_folds)
+
 class SimpleFLSolution(SSLFLSolution):
   def __init__(self, ssl_fl_problem):
     SSLFLSolution.__init__(self, ssl_fl_problem)
@@ -344,6 +514,20 @@ class SimpleFLSolution(SSLFLSolution):
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
+
+  def get_latent_space(self, data):
+
+    inp = self.final_model.input                                           # input placeholder
+    outputs = [layer.output for layer in self.final_model.layers]          # all layer outputs
+    functors = [K.function([inp, K.learning_phase()], [out]) for out in outputs]    # evaluation functions
+
+    # Testing
+    # test = np.random.random(input_shape)[np.newaxis,...]
+    for x in data:
+      layer_outs = [func(data) for func in functors]
+      print(layer_outs[0].shape)
+      exit()
+      
   def create(self):
     if self.ssl_fl_problem.data_type in [float, np.float32, np.float64]:
       clients_dataX = self.ssl_fl_problem.clients_dataX
@@ -457,6 +641,24 @@ class SimpleSSLFLSolution(SSLFLSolution):
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
+  
+  def get_latent_space(self, data):
+
+    
+    # with a Sequential model
+    get_3rd_layer_output = K.function([self.final_model.layers[0].input],
+                                      [self.final_model.layers[1].output])
+
+    # Testing
+    # test = np.random.random(input_shape)[np.newaxis,...]
+    layer_outs = get_3rd_layer_output([data])
+    # print(layer_outs[0].shape)
+    # print(layer_outs[1])
+    # print(len(layer_outs))
+    # exit()
+
+    return np.array(layer_outs[0])
+
 
   def create(self):
     if self.ssl_fl_problem.data_type in [float, np.float32, np.float64]:
@@ -472,10 +674,14 @@ class SimpleSSLFLSolution(SSLFLSolution):
       final_model = self.create_model_dl(input_shape, num_classes)
       
       # n_rounds = 50
-      # n_rounds = 10 # BRACIS Experiment
+      n_rounds = 10 # BRACIS Experiment
       # n_rounds = 3
       # n_rounds = 1
-      n_rounds = 0
+      # self.name = 'fssl'
+      self.name = 'fssl-noniid'
+
+      # self.name = 'centralized'
+      # n_rounds = 0
       
       for i in range(n_rounds):
         print("Round ", i)
@@ -519,7 +725,10 @@ class SimpleSSLFLSolution(SSLFLSolution):
       # final_model.fit(self.ssl_fl_problem.trainX, categY, epochs=1)
       # final_model.fit(self.ssl_fl_problem.trainX, categY, epochs=100)
       final_model.fit(self.ssl_fl_problem.trainX, categY, epochs=300, verbose=0)
+      # final_model.fit(self.ssl_fl_problem.trainX, categY, epochs=0, verbose=0)
       # for i in range(100):
+      # print(self.ssl_fl_problem.trainX.shape)
+      print(final_model.layers[0].input)
       '''
       for i in range(300):
         print("Epoch ", i)
@@ -638,7 +847,9 @@ def main():
   # print("SimpleNonFLSolution")
   # s = SimpleNonFLSolution(p)
   # s.create()
-  # s.report_metrics()
+  # # s.report_metrics()
+  # s.plot_tsne_on_cross_val()
+
 
   # print("\n\SimpleFLSolution")
   # s = SimpleFLSolution(p)
@@ -649,8 +860,10 @@ def main():
   s = SimpleSSLFLSolution(p)
   # s.create()
   # s.report_metrics()
-  s.report_metrics_on_cross_val()
+  # s.report_metrics_on_cross_val()
 
+  # s.plot_tsne_on_cross_val()
+  p.report_train_test_stats_cross_val()
 
   
 

@@ -251,7 +251,8 @@ def load_toniot(
   return (*data, ds_name)
 
 
-def load_nslkdd(ds_path='datasets/nsl-kdd', return_fnames=True, diff_level=10):
+# def load_nslkdd(ds_path='datasets/nsl-kdd', return_fnames=True, diff_level=10):
+def load_nslkdd(ds_path='datasets/nsl-kdd', return_fnames=True, diff_level=-1):
 
   d_train = np.loadtxt(f"{ds_path}/KDDTrain+.txt", delimiter=',', dtype=object)
   y_train = d_train[:, -2]
