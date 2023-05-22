@@ -57,7 +57,6 @@ class SSLFLProblem(object):
     if not (testY is None):
       total_y = total_y.union(set(list(testY)))
 
-    # self.num_classes = len(set(self.trainY))
     self.num_classes = len(set(total_y))
 
   def report_metrics(self, ssl_fl_solution):
@@ -195,7 +194,6 @@ class SSLFLProblem(object):
     total_dataX = np.concatenate((self.trainX, self.testX))
     total_dataY = np.concatenate((self.trainY, self.testY))
 
-    # skf = StratifiedKFold(n_splits=n_folds)
     skf = StratifiedKFold(n_splits=n_folds, random_state=0, shuffle=True)
 
 
@@ -235,20 +233,13 @@ class RandomGeneratedProblem(SSLFLProblem):
     skf = StratifiedKFold(n_splits=n_clients+2)
     
     for i, (train_index, test_index) in enumerate(skf.split(X, y)):
-      # # undersample = imblearn.under_sampling.RandomUnderSampler(sampling_strategy='not minority', random_state=0)
-      # undersample = imblearn.under_sampling.RandomUnderSampler(sampling_strategy='majority', random_state=0)
-      # X_over, y_over = undersample.fit_resample(total_data_X[test_index], total_data_Y[test_index])
       
-      # fl_dataX[f'Client {i}'] = X_over
-      # fl_dataY[f'Client {i}'] = y_over
 
       clients_dataX.append(X[test_index])
       clients_dataY.append(y[test_index])
     
     
 
-    # trainX, testX, trainY, testY = train_test_split(
-    #   X, y, test_size=0.33, random_state=42)
     trainX = clients_dataX[0]
     trainY = clients_dataY[0]
     
@@ -275,7 +266,6 @@ class NSLKDDProblem(SSLFLProblem):
     if data_set_name == 'toniot':
       arg_test = [
         {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.01 , 'drop_cols': ['type', 'label', 'ts', 'src_port', 'dst_port']},
-        # {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.8 , 'drop_cols': ['type', 'label', 'ts', 'src_port', 'dst_port']},
       ]
     
     if data_set_name == 'botiot':
@@ -333,17 +323,8 @@ class NSLKDDProblem(SSLFLProblem):
       test_size_rate = 0.0009
 
 
-      # undersample_strategy_dict = {}
-      # for y in set(list(trainY)):
-      #   # undersample_strategy_dict[y] = int(sum(trainY==y)/10)
-      #   undersample_strategy_dict[y] = int(sum(trainY==y)/100)
-
-      # undersample = imblearn.under_sampling.RandomUnderSampler(sampling_strategy=undersample_strategy_dict, random_state=0)
-      # trainX, trainY = undersample.fit_resample(trainX, trainY)
-
       undersample_strategy_dict = {}
       for y in set(list(testY)):
-        # undersample_strategy_dict[y] = int(sum(testY==y)/10)
         undersample_strategy_dict[y] = int(sum(testY==y)/100)
       undersample = imblearn.under_sampling.RandomUnderSampler(sampling_strategy=undersample_strategy_dict, random_state=0)
 
@@ -352,15 +333,10 @@ class NSLKDDProblem(SSLFLProblem):
 
     if data_set_name == 'nsl-kdd':
       trainX, trainY, testX, testY, feature_names, ds_name = load_nslkdd(ds_path=input_file)
-      # print(len(trainX))
-      # test_size_rate = 0.2
-      # print(len(testX))
       test_size_rate = 0.0009
-      # test_size_rate = 0.009
 
       undersample_strategy_dict = {}
       for y in set(list(testY)):
-        # undersample_strategy_dict[y] = int(sum(testY==y)/10)
         undersample_strategy_dict[y] = int(sum(testY==y)/4)
       undersample = imblearn.under_sampling.RandomUnderSampler(sampling_strategy=undersample_strategy_dict, random_state=0)
 
@@ -429,23 +405,6 @@ class NSLKDDProblem(SSLFLProblem):
     # print(convert_dict)
     # exit()
 
-    # print(len(trainX))
-    # print(len(testX))
-    
-    # # new_array = [tuple(row) for row in trainX]
-    # # uniques, idx = np.unique(new_array, return_index=True)
-    # uniques, idx = np.unique(trainX.astype(np.float32), axis=0, return_index=True)
-    # trainX = uniques
-    # trainY = trainY[idx]
-
-    # # new_array = [tuple(row) for row in testX]
-    # # uniques, idx = np.unique(new_array, return_index=True)
-    # uniques, idx = np.unique(testX.astype(np.float32), axis=0, return_index=True)
-    # testX = uniques
-    # testY = testY[idx]
-
-    
-
 
     client_dataX, server_dataX, client_dataY, server_dataY = train_test_split(
     trainX, trainY, test_size=test_size_rate, random_state=42,
@@ -459,9 +418,6 @@ class NSLKDDProblem(SSLFLProblem):
       "",
       "logdir/",
       "noniid-labeldir", # iid-diff-quantity, noniid-labeldir
-      # 5
-      # 16,
-      # 100,
       n_clients,
       beta=dirichlet_beta,
       random_seed=random_seed
@@ -472,11 +428,6 @@ class NSLKDDProblem(SSLFLProblem):
     
     fl_dataX = [trainX[d[4][i]] for i in d[4]]
     fl_dataY = [trainY[d[4][i]] for i in d[4]]
-
-    # print([len(x) for x in fl_dataX])
-    # print(len(server_dataX))
-    # print(len(testX))
-    # exit()
 
     SSLFLProblem.__init__(self, fl_dataX, server_dataX, server_dataY, testX, testY, clients_dataY=fl_dataY)
     return
@@ -569,94 +520,40 @@ class SimpleSSLFLSolution(SSLFLSolution):
     SSLFLSolution.__init__(self, ssl_fl_problem)
   
   def create_model_dl(self, input_shape, num_classes):
-    '''
-    model = tf.keras.models.Sequential()
-    
-    model.add(tf.keras.layers.Dense(1000, activation='relu', input_dim=input_shape))
-    
-    model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
-    # opt = tf.keras.optimizers.Adam(learning_rate=0.01)
-    opt = tf.keras.optimizers.Adam(learning_rate=0.0001)
-    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
-    return model
-    '''
     
     
     model = tf.keras.models.Sequential()
     
-    # model.add(tf.keras.layers.Dense(1000, activation='sigmoid', input_dim=input_shape,
-    # kernel_regularizer=tf.keras.regularizers.l2()))
-
     model.add(tf.keras.layers.Dense(1000, activation='sigmoid', input_dim=input_shape))
 
 
     model.add(tf.keras.layers.Dropout(0.2))
     
     model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
-    # opt = tf.keras.optimizers.Adam(learning_rate=0.001)
-    # opt = tf.keras.optimizers.SGD(learning_rate=1)
+
     opt = tf.keras.optimizers.RMSprop()
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
   def create_pretext_model_dl(self, input_shape, num_classes):
-    '''
+    
     model = tf.keras.models.Sequential()
-    
-    model.add(tf.keras.layers.Dense(1000, activation='relu', input_dim=input_shape))
-    
-    model.add(tf.keras.layers.Dense(input_shape, activation='linear'))
-
-    # opt = tf.keras.optimizers.Adam(learning_rate=0.01)
-    opt = tf.keras.optimizers.SGD(learning_rate=0.000001)
-    model.compile(optimizer=opt, loss=tf.keras.losses.MeanSquaredError(), metrics=['accuracy'])
-    return model
-    '''
-
-    '''
-    model = tf.keras.models.Sequential()
-    
-    model.add(tf.keras.layers.Dense(1000, activation='sigmoid', input_dim=input_shape))
-    
-    model.add(tf.keras.layers.Dense(input_shape, activation='softmax'))
-    opt = tf.keras.optimizers.Adam(learning_rate=0.01)
-    model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
-    return model
-    '''
-
-    model = tf.keras.models.Sequential()
-    
-    
     model.add(tf.keras.layers.Dense(1000, activation='linear', input_dim=input_shape))
-    
     model.add(tf.keras.layers.Dropout(0.2))
-
-
     model.add(tf.keras.layers.Dense(input_shape, activation='relu'))
 
-    # opt = tf.keras.optimizers.Adam(learning_rate=0.001)
-    # opt = tf.keras.optimizers.Adam(learning_rate=0.01)
-    # opt = tf.keras.optimizers.SGD(learning_rate=0.000001)
     opt = tf.keras.optimizers.RMSprop()
+
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
     return model
   
   def get_latent_space(self, data):
 
-    
-    # with a Sequential model
     get_3rd_layer_output = K.function([self.final_model.layers[0].input],
                                       [self.final_model.layers[1].output])
 
-    # Testing
-    # test = np.random.random(input_shape)[np.newaxis,...]
     layer_outs = get_3rd_layer_output([data])
-    # print(layer_outs[0].shape)
-    # print(layer_outs[1])
-    # print(len(layer_outs))
-    # exit()
-
     return np.array(layer_outs[0])
 
 
@@ -668,7 +565,6 @@ class SimpleSSLFLSolution(SSLFLSolution):
       num_classes = self.ssl_fl_problem.num_classes
 
       n_clients = len(clients_dataX)
-      # model_list = [self.create_model_dl(input_shape, num_classes) for i in range(n_clients)]
       model_list = [self.create_pretext_model_dl(input_shape, num_classes) for i in range(n_clients)]
       final_pretext_model = self.create_pretext_model_dl(input_shape, num_classes)
       final_model = self.create_model_dl(input_shape, num_classes)
@@ -688,47 +584,32 @@ class SimpleSSLFLSolution(SSLFLSolution):
         for m, clientX, clientY in zip(model_list, clients_dataX, clients_dataY):
           m.set_weights(final_pretext_model.get_weights())
           
-          # categY = tf.keras.utils.to_categorical(clientY, num_classes = num_classes)
-
-          # m.fit(clientX, categY)
           m.fit(clientX, clientX, verbose=0)
           
-          # model_list.append(m)
-
-        # avg_weights = sum([np.array(x.get_weights()) for x in model_list])/len(model_list)
-        # final_model.set_weights(avg_weights)
         
         new_weights = []
         for lidx in range(len(final_pretext_model.get_weights())):
           avg_weights = sum([np.array(x.get_weights()[lidx]) for x in model_list])/len(model_list)
           new_weights.append(avg_weights)
 
-        # final_model.set_weights(avg_weights)
         final_pretext_model.set_weights(new_weights)
         
       new_weights = final_model.get_weights()
-      # print([x.shape for x in final_model.get_weights()])
       encoder_layer_limit = 2
       for lidx in range(len(final_pretext_model.get_weights())):
         if lidx == encoder_layer_limit:
           break
         
         avg_weights = sum([np.array(x.get_weights()[lidx]) for x in model_list])/len(model_list)
-        # new_weights.append(avg_weights)
         new_weights[lidx] = avg_weights
 
-      # final_model.set_weights(avg_weights)
       final_model.set_weights(new_weights)
 
       categY = tf.keras.utils.to_categorical(self.ssl_fl_problem.trainY, num_classes = num_classes)
 
-      # final_model.fit(self.ssl_fl_problem.trainX, categY, epochs=1)
-      # final_model.fit(self.ssl_fl_problem.trainX, categY, epochs=100)
       final_model.fit(self.ssl_fl_problem.trainX, categY, epochs=300, verbose=0)
-      # final_model.fit(self.ssl_fl_problem.trainX, categY, epochs=0, verbose=0)
-      # for i in range(100):
-      # print(self.ssl_fl_problem.trainX.shape)
       print(final_model.layers[0].input)
+      
       '''
       for i in range(300):
         print("Epoch ", i)
@@ -763,7 +644,6 @@ class SimpleNonFLSolution(SSLFLSolution):
     model.add(tf.keras.layers.Dense(1000, activation='relu', input_dim=input_shape))
     
     model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
-    # opt = tf.keras.optimizers.Adam(learning_rate=0.1)
     opt = tf.keras.optimizers.SGD(learning_rate=0.1)
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
     return model
@@ -799,37 +679,6 @@ def main():
 
   parser.add_argument('-f', '--input_file', dest='input_file', type=str,
                       required=True)
-  # parser.add_argument('-o', '--output_file', dest='output_file', type=str,
-  #                     required=False, default='result_toniot.json')
-  # parser.add_argument('-l','--list', nargs='+', dest='list', help='List of ',
-  #                     type=int)
-  # parser.add_argument('-s', dest='silent', action='store_true')
-  # parser.add_argument('-dl', '--use_dl_model', dest='use_dl_model', action='store_true')
-
-  
-  # parser.add_argument('-t', '--data_seg_type', dest='data_seg_type', type=str,
-  #                     required=False, choices=['ip', 'iid', 'noniid', 'dirichlet'], default='ip')
-  # parser.add_argument('-db', '--dirichlet_beta', dest='dirichlet_beta', type=float,
-  #                     required=False, default=0.4)
-  # parser.add_argument('-nc', '--n_clients', dest='n_clients', type=int,
-  #                     required=False, default=16)
-  # parser.add_argument('-rs', '--random_seed', dest='random_seed', type=int,
-  #                     required=False, default=0)
-
-
-  # parser.add_argument('-vt', '--vote_type', dest='vote_type', type=str,
-  #                     required=False, choices=['hard', 'norm', 'weight_norm', 'relative_weight_norm', 'soft_rank'], default='hard')
-
-  # parser.add_argument('-da', '--data_augmentation', dest='data_augmentation', type=str,
-  #                     required=False, choices=['none', 'oversampling', 'test'], default='none')
-
-  
-  # parser.add_argument('-d', '--data_set_name', dest='data_set_name', type=str,
-  #                     required=False, choices=['toniot', 'botiot', 'nsl-kdd'], default='toniot')
-
-  # parser.set_defaults(list=[])    
-  # parser.set_defaults(silent=False)
-  # parser.set_defaults(use_dl_model=False)
   
 
   args = parser.parse_args()
