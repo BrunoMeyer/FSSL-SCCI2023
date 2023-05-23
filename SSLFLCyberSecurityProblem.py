@@ -36,33 +36,44 @@ import collections
 
 from SSLFLProblem import SSLFLProblem
 
+
+ACEPTED_DS_NAMES = [
+  'botiot',
+  'toniot',
+  'nsl-kdd',
+]
 class SSLFLCyberSecurityProblem(SSLFLProblem):
-  def __init__(self, input_file):
+  def __init__(self, input_file, data_set_name='botiot', test_ratio=0.01, n_clients=10, dirichlet_beta=0.1, random_seed=0):
+    self.data_set_name = data_set_name
+    self.test_ratio = test_ratio
+    self.n_clients = n_clients
+    self.dirichlet_beta = dirichlet_beta
+    self.random_seed = random_seed
+
+    if not (data_set_name in ACEPTED_DS_NAMES):
+      raise '"{}" dataset is not available. Please choose one of the following datasets: {}'.format(data_set_name, ACEPTED_DS_NAMES)
     
-    # data_set_name = 'toniot'
-    data_set_name = 'botiot'
-    # data_set_name = 'nsl-kdd'
 
     self.data_set_name = data_set_name
 
     if data_set_name == 'toniot':
       arg_test = [
-        {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.01 , 'drop_cols': ['type', 'label', 'ts', 'src_port', 'dst_port']},
+        {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': test_ratio , 'drop_cols': ['type', 'label', 'ts', 'src_port', 'dst_port']},
       ]
     
     if data_set_name == 'botiot':
       arg_test = [
-        {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.01 , 'drop_cols': ['sport', 'dport', 'category', 'subcategory', 'pkSeqID']},
+        {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': test_ratio , 'drop_cols': ['sport', 'dport', 'category', 'subcategory', 'pkSeqID']},
       ]
     
     if data_set_name == 'nsl-kdd':
       arg_test = [
-        {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': 0.01 , 'drop_cols': ['sport', 'dport', 'category', 'subcategory', 'pkSeqID']},
+        {'use_dimred':False, 'class_type':'multiclass', 'attack_type': 'all', 'return_fnames': True, 'test_ratio': test_ratio , 'drop_cols': ['sport', 'dport', 'category', 'subcategory', 'pkSeqID']},
       ]
     
     # n_clients = 50
-    n_clients = 10
-    random_seed = 0
+    # n_clients = 10
+    # random_seed = 0
 
 
     
@@ -128,7 +139,7 @@ class SSLFLCyberSecurityProblem(SSLFLProblem):
 
     data_augmentation = None
     # dirichlet_beta = 100
-    dirichlet_beta = 0.1
+    # dirichlet_beta = 0.1
 
     src_ip_idx = None
     dst_ip_idx = None

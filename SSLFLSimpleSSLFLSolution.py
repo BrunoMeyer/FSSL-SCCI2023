@@ -79,7 +79,7 @@ class SSLFLSimpleSSLFLSolution(SSLFLSolution):
     return np.array(layer_outs[0])
 
 
-  def create(self):
+  def create(self, n_rounds=0, name='centralized'):
     if self.ssl_fl_problem.data_type in [float, np.float32, np.float64]:
       clients_dataX = self.ssl_fl_problem.clients_dataX
       clients_dataY = self.ssl_fl_problem.clients_dataY
@@ -98,8 +98,9 @@ class SSLFLSimpleSSLFLSolution(SSLFLSolution):
       # self.name = 'fssl'
       # self.name = 'fssl-noniid'
 
-      self.name = 'centralized'
-      n_rounds = 0
+      self.name = name
+      if name == 'centralized':
+        n_rounds = 0
       
       for i in range(n_rounds):
         print("Round ", i)

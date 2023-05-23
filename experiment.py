@@ -19,7 +19,18 @@ def main():
   # print("RandomGeneratedProblem")
   # print("#"*80)
 
-  p = SSLFLCyberSecurityProblem(args.input_file)
+  # p = SSLFLCyberSecurityProblem(args.input_file)
+
+  data_set_name='botiot'
+  # data_set_name='nsl-kdd'
+  test_ratio = 0.01
+  n_clients = 10
+  # n_clients = 50
+  # dirichlet_beta=0.1
+  dirichlet_beta=100.0
+  random_seed = 0
+
+  p = SSLFLCyberSecurityProblem(args.input_file, data_set_name=data_set_name, test_ratio=test_ratio, n_clients=n_clients, dirichlet_beta=dirichlet_beta, random_seed=random_seed)
   print("SSLFLCyberSecurityProblem")
   print("#"*80)
 
@@ -40,7 +51,7 @@ def main():
   s = SSLFLSimpleSSLFLSolution(p)
   # s.create()
   # s.report_metrics()
-  s.report_metrics_on_cross_val()
+  s.report_metrics_on_cross_val(n_rounds=10, name='fssl')
 
   # s.plot_tsne_on_cross_val()
   # p.report_train_test_stats_cross_val()

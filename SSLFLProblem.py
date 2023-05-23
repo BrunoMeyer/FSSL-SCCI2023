@@ -96,7 +96,7 @@ class SSLFLProblem(object):
     
 
 
-  def report_metrics_on_cross_val(self, solution, n_folds=10):
+  def report_metrics_on_cross_val(self, solution, n_folds=10, **kargs):
 
     total_dataX = np.concatenate((self.trainX, self.testX))
     total_dataY = np.concatenate((self.trainY, self.testY))
@@ -119,7 +119,7 @@ class SSLFLProblem(object):
 
       print(f"Fold {i}")
       
-      solution.create()
+      solution.create(**kargs)
       solution.report_metrics()
 
     self.trainX = old_trainX

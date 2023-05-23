@@ -46,8 +46,8 @@ class SSLFLSolution(object):
   def predict(self, X):
     return self.final_model.predict(X)
     
-  def report_metrics_on_cross_val(self, n_folds = 10):
-    self.ssl_fl_problem.report_metrics_on_cross_val(self, n_folds=n_folds)
+  def report_metrics_on_cross_val(self, **kargs):
+    self.ssl_fl_problem.report_metrics_on_cross_val(self, **kargs)
 
   def plot_tsne_on_cross_val(self, n_folds = 10):
     self.ssl_fl_problem.plot_tsne_on_cross_val(self, n_folds=n_folds)
