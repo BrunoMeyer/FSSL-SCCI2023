@@ -4,6 +4,7 @@ import argparse
 
 from SSLFLCyberSecurityProblem import SSLFLCyberSecurityProblem
 from SSLFLSimpleSSLFLSolution import SSLFLSimpleSSLFLSolution
+from SSLFLPretextFLSolution import SSLFLPretextFLSolution
 
 def main():
   parser = argparse.ArgumentParser(description='Process some integers.')
@@ -21,6 +22,7 @@ def main():
 
   # p = SSLFLCyberSecurityProblem(args.input_file)
 
+  # data_set_name='toniot'
   data_set_name='botiot'
   # data_set_name='nsl-kdd'
   test_ratio = 0.01
@@ -48,10 +50,14 @@ def main():
   # s.report_metrics()
 
   print("\n\SSLFLSimpleSSLFLSolution")
-  s = SSLFLSimpleSSLFLSolution(p)
+  # s = SSLFLSimpleSSLFLSolution(p)
+  s = SSLFLPretextFLSolution(p)
   # s.create()
   # s.report_metrics()
-  s.report_metrics_on_cross_val(n_rounds=10, name='fssl')
+  # s.report_metrics_on_cross_val(n_rounds=100, name='fssl')
+  s.report_metrics_on_cross_val(n_rounds=50, name='fssl')
+  # s.report_metrics_on_cross_val(n_rounds=10, name='fssl')
+  # s.report_metrics_on_cross_val(n_rounds=0, name='centralized')
 
   # s.plot_tsne_on_cross_val()
   # p.report_train_test_stats_cross_val()

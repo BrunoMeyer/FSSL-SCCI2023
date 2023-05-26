@@ -230,7 +230,8 @@ def load_toniot(
     with open(cache_path, 'rb') as handle:
       data = pickle.load(handle)
     return (*data, ds_name)
-    
+  
+  print(input_file)
   df = pd.read_csv(input_file)
 
           
