@@ -41,16 +41,16 @@ class SSLFLSolution(object):
     self.final_model = None
 
   def report_metrics(self):
-    self.ssl_fl_problem.report_metrics(self)
+    return self.ssl_fl_problem.report_metrics(self)
 
   def predict(self, X):
     return self.final_model.predict(X)
     
   def report_metrics_on_cross_val(self, **kargs):
-    self.ssl_fl_problem.report_metrics_on_cross_val(self, **kargs)
+    return self.ssl_fl_problem.report_metrics_on_cross_val(self, **kargs)
 
   def plot_tsne_on_cross_val(self, n_folds = 10):
-    self.ssl_fl_problem.plot_tsne_on_cross_val(self, n_folds=n_folds)
+    return self.ssl_fl_problem.plot_tsne_on_cross_val(self, n_folds=n_folds)
 
 class SimpleFLSolution(SSLFLSolution):
   def __init__(self, ssl_fl_problem):

@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt
 import collections
 
 from SSLFLSolution import SSLFLSolution
-
+import pickle
 
 class SSLFLSimpleSSLFLSolution(SSLFLSolution):
   def __init__(self, ssl_fl_problem):
@@ -79,7 +79,14 @@ class SSLFLSimpleSSLFLSolution(SSLFLSolution):
     return np.array(layer_outs[0])
 
 
-  def create(self, n_rounds=0, name='centralized'):
+  def create(
+    self,
+    n_rounds=0,
+    name='centralized',
+    epochs_client=1,
+    epochs_server=300,
+    verbose_client=0,
+    verbose_server=1):
     if self.ssl_fl_problem.data_type in [float, np.float32, np.float64]:
       clients_dataX = self.ssl_fl_problem.clients_dataX
       clients_dataY = self.ssl_fl_problem.clients_dataY
@@ -102,13 +109,22 @@ class SSLFLSimpleSSLFLSolution(SSLFLSolution):
       if name == 'centralized':
         n_rounds = 0
       
+
+      log_rounds_autoencoder = []
+      log_rounds_final_model = [] # TODO: Add option to test final model at each round
+
+      log_final_model = None
+      
       for i in range(n_rounds):
+        log_round_autoencoder = []
         print("Round ", i)
         for m, clientX, clientY in zip(model_list, clients_dataX, clients_dataY):
           m.set_weights(final_pretext_model.get_weights())
           
-          m.fit(clientX, clientX, verbose=0)
-          
+          # m.fit(clientX, clientX, verbose=0)
+          log = m.fit(clientX, clientX, epochs=epochs_client, verbose=verbose_client)
+
+          log_round_autoencoder.append(log.history)
         
         new_weights = []
         for lidx in range(len(final_pretext_model.get_weights())):
@@ -116,7 +132,8 @@ class SSLFLSimpleSSLFLSolution(SSLFLSolution):
           new_weights.append(avg_weights)
 
         final_pretext_model.set_weights(new_weights)
-        
+        log_rounds_autoencoder.append(log_round_autoencoder)
+
       new_weights = final_model.get_weights()
       encoder_layer_limit = 2
       for lidx in range(len(final_pretext_model.get_weights())):
@@ -130,8 +147,9 @@ class SSLFLSimpleSSLFLSolution(SSLFLSolution):
 
       categY = tf.keras.utils.to_categorical(self.ssl_fl_problem.trainY, num_classes = num_classes)
 
-      final_model.fit(self.ssl_fl_problem.trainX, categY, epochs=300, verbose=0)
-      print(final_model.layers[0].input)
+      log_final_model = final_model.fit(self.ssl_fl_problem.trainX, categY, epochs=epochs_server, verbose=verbose_server)
+      
+      # print(final_model.layers[0].input)
       
       '''
       for i in range(300):
@@ -151,6 +169,12 @@ class SSLFLSimpleSSLFLSolution(SSLFLSolution):
       '''
 
       self.final_model = final_model
+
+      return {
+        'log_rounds_autoencoder': log_rounds_autoencoder,
+        'log_rounds_final_model': log_rounds_final_model,
+        'log_final_model': log_final_model.history,
+      }
 
   def predict(self, X):
     y_pred = np.argmax(self.final_model.predict(X), axis=1)

@@ -65,6 +65,8 @@ class SSLFLProblem(object):
 
     print(report)
 
+    return {'testY': self.testY, 'predY': y_pred}
+
   def plot_tsne(self, ssl_fl_solution, figname=None):
     latent_vectors_train = ssl_fl_solution.get_latent_space(self.trainX)
     latent_vectors_test = ssl_fl_solution.get_latent_space(self.testX)
@@ -111,6 +113,9 @@ class SSLFLProblem(object):
     old_testY = self.testY
     
     
+    log_create_folds = []
+    log_pred_folds = []
+
     for i, (test_index, train_index) in enumerate(skf.split(total_dataX, total_dataY)): # test index is bigger (inverted leave one out)
       self.trainX = total_dataX[train_index]
       self.trainY = total_dataY[train_index]
@@ -119,13 +124,22 @@ class SSLFLProblem(object):
 
       print(f"Fold {i}")
       
-      solution.create(**kargs)
-      solution.report_metrics()
+      log_create = solution.create(**kargs)
+      log_pred = solution.report_metrics()
+
+
+      log_create_folds.append(log_create)
+      log_pred_folds.append(log_pred)
 
     self.trainX = old_trainX
     self.trainY = old_trainY
     self.testX = old_testX
     self.testY = old_testY
+
+    return {
+      'log_create_folds': log_create_folds,
+      'log_pred_folds': log_pred_folds,
+    }
 
 
   def report_train_test_stats_cross_val(self, n_folds=10):

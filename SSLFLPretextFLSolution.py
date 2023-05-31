@@ -91,6 +91,7 @@ class SSLFLPretextFLSolution(SSLFLSolution):
     # model.add(tf.keras.layers.Dense(1026, activation='sigmoid'))
     # model.add(tf.keras.layers.Dense(1025, activation='softmax'))
     # model.add(tf.keras.layers.Dense(2, activation='relu'))
+    # model.add(tf.keras.layers.Dense(128, activation='linear'))
     model.add(tf.keras.layers.Dense(128, activation='linear'))
 
     opt = tf.keras.optimizers.RMSprop()
