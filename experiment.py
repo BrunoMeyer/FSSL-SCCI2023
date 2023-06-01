@@ -15,6 +15,9 @@ def main():
   parser.add_argument('-f', '--input_file', dest='input_file', type=str,
                       required=True)
   
+  parser.add_argument('-o', '--output_file', dest='output_file', type=str,
+                      required=False, default=None)
+  
   parser.add_argument('-en', '--exp_name', dest='exp_name', type=str,
                       required=False, default='test')
 
@@ -68,6 +71,10 @@ def main():
   # dirichlet_beta=0.1
   dirichlet_beta = args.dirichlet_beta
   random_seed = args.random_seed
+  output_file = args.output_file
+
+  if output_file is None:
+    output_file = '{}.pickle'.format(args.exp_name)
 
   p = SSLFLCyberSecurityProblem(
     args.input_file,
@@ -132,7 +139,7 @@ def main():
     },
     'data': log
   }
-  with open('test.pickle', 'wb') as file_pi:
+  with open(output_file, 'wb') as file_pi:
     pickle.dump(experiment_log, file_pi)
   
 
