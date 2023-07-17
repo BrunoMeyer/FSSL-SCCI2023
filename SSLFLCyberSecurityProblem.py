@@ -140,7 +140,9 @@ class SSLFLCyberSecurityProblem(SSLFLProblem):
       testX, testY = undersample.fit_resample(testX, testY)
     
     self.feature_names = feature_names
-
+    # print([x.dtype for x in testX.T])
+    # exit()
+    
     data_augmentation = None
     # dirichlet_beta = 100
     # dirichlet_beta = 0.1

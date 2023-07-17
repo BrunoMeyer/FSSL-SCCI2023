@@ -1,9 +1,14 @@
+#!/usr/bin/env python
+import matplotlib
+matplotlib.use('Agg')
+
+
 import pandas as pd
 import numpy as np
 import argparse
 
 from SSLFLCyberSecurityProblem import SSLFLCyberSecurityProblem
-from SSLFLSimpleSSLFLSolution import SSLFLSimpleSSLFLSolution
+from SSLFLSimpleSSLFLSolution import SSLFLSimpleSSLFLSolution, SSLFLFreezeKTSSLFLSolution
 from SSLFLPretextFLSolution import SSLFLPretextFLSolution
 
 import pickle
@@ -76,6 +81,7 @@ def main():
   if output_file is None:
     output_file = '{}.pickle'.format(args.exp_name)
 
+
   p = SSLFLCyberSecurityProblem(
     args.input_file,
     data_set_name=data_set_name,
@@ -99,8 +105,12 @@ def main():
   # s.create()
   # s.report_metrics()
 
-  print("\n\SSLFLSimpleSSLFLSolution")
-  s = SSLFLSimpleSSLFLSolution(p)
+  # print("\n\SSLFLSimpleSSLFLSolution")
+  # s = SSLFLSimpleSSLFLSolution(p)
+
+  print("\n\SSLFLFreezeKTSSLFLSolution")
+  s = SSLFLFreezeKTSSLFLSolution(p)
+
   # s = SSLFLPretextFLSolution(p)
   # s.create()
   # s.report_metrics()

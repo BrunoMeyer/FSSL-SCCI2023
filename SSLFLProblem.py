@@ -65,7 +65,7 @@ class SSLFLProblem(object):
 
     print(report)
 
-    return {'testY': self.testY, 'predY': y_pred}
+    return {'trainY': self.trainY, 'testY': self.testY, 'predY': y_pred}
 
   def plot_tsne(self, ssl_fl_solution, figname=None):
     latent_vectors_train = ssl_fl_solution.get_latent_space(self.trainX)
@@ -139,6 +139,7 @@ class SSLFLProblem(object):
     return {
       'log_create_folds': log_create_folds,
       'log_pred_folds': log_pred_folds,
+      'log_clients_dataY': self.clients_dataY,
     }
 
 
