@@ -38,18 +38,28 @@ from SSLFLProblem import SSLFLProblem
 
 import copy
 
+
+
+def is_ip_private(ip):
+  return ip.startswith('192.168')
+    
+    
 ACEPTED_DS_NAMES = [
   'botiot',
   'toniot',
   'nsl-kdd',
 ]
 class SSLFLCyberSecurityProblem(SSLFLProblem):
-  def __init__(self, input_file, data_set_name='botiot', test_ratio=0.01, n_clients=10, dirichlet_beta=0.1, random_seed=0):
+  def __init__(self, input_file, data_set_name='botiot', test_ratio=0.01, n_clients=10, dirichlet_beta=0.1, random_seed=0, normalize_data=False):
     self.data_set_name = data_set_name
     self.test_ratio = test_ratio
     self.n_clients = n_clients
     self.dirichlet_beta = dirichlet_beta
     self.random_seed = random_seed
+    self.normalize_data = normalize_data
+
+
+
 
     if not (data_set_name in ACEPTED_DS_NAMES):
       raise '"{}" dataset is not available. Please choose one of the following datasets: {}'.format(data_set_name, ACEPTED_DS_NAMES)
@@ -183,7 +193,7 @@ class SSLFLCyberSecurityProblem(SSLFLProblem):
     print('Total instances train: {}'.format(len(trainY)))
     print('Total instances test: {}'.format(len(testY)))
     print('Total instances: {}'.format(len(testY) + len(trainY)))
-      
+    
     # scaler = MinMaxScaler()
     # scaler.fit(np.concatenate((trainX, testX)))
     # trainX = scaler.transform(trainX)
@@ -210,6 +220,12 @@ class SSLFLCyberSecurityProblem(SSLFLProblem):
     # exit()
 
 
+    if normalize_data:
+      scaler = Normalizer()
+      scaler.fit(np.concatenate((trainX, testX)))
+      trainX = scaler.transform(trainX)
+      testX = scaler.transform(testX)
+
     client_dataX, server_dataX, client_dataY, server_dataY = train_test_split(
     trainX, trainY, test_size=test_size_rate, random_state=42,
     stratify=trainY,
@@ -226,6 +242,37 @@ class SSLFLCyberSecurityProblem(SSLFLProblem):
       beta=dirichlet_beta,
       random_seed=random_seed
     )
+
+    if data_seg_type == 'ip':
+      # '''
+      mask_total_data_X_local_ips = np.zeros(total_data_X.shape[0], dtype=np.bool)
+      for ip in ip_set:
+        if is_ip_private(ip):
+          mask = total_data_X[:, src_ip_idx] == ip
+          mask = np.logical_or(mask, total_data_X[:, dst_ip_idx] == ip)
+
+          mask_total_data_X_local_ips = np.logical_or(mask_total_data_X_local_ips, mask)
+
+          dataX = total_data_X[mask]
+
+          # for i in range(dataX.shape[1]):
+          #   if not i in [src_ip_idx, dst_ip_idx]:
+          #     is_fin = np.isfinite(dataX[:, i].astype(np.float32))
+          #     notis_fin = np.logical_not(is_fin)
+          #     print(np.sum(notis_fin))
+
+          dataY = total_data_Y[mask]
+          fl_dataX[ip] = dataX
+          fl_dataY[ip] = dataY
+          unique, counts = np.unique(dataY, return_counts=True)
+          print(dict(zip(unique, counts)))
+      
+      fl_dataX['internet'] = []
+      fl_dataY['internet'] = []
+      for x,y in zip(total_data_X, total_data_Y):
+        if(not is_ip_private(x[src_ip_idx]) or (not is_ip_private(x[dst_ip_idx]))):
+          fl_dataX['internet'].append(x)
+          fl_dataY['internet'].append(y)
 
     mask_total_data_X_local_ips = np.ones(trainX.shape[0], dtype=np.bool)
 
@@ -244,11 +291,20 @@ class SSLFLCyberSecurityProblem(SSLFLProblem):
       self.forbidden_features = ['sport', 'dport']
       self.feature_label_candidates = ['sport', 'dport']
 
+    if self.data_set_name == 'nsl-kdd':
+      self.forbidden_features = []
+      self.feature_label_candidates = []
+
+    self.raw_feature_names = None
+    
     self.remove_forbidden_features()
     self.create_pretext_label_candidates()
     return
   
   def create_pretext_label_candidates(self):
+    if self.raw_feature_names is None:
+      return
+    
     f_idx = []
     for i, fn in enumerate(self.raw_feature_names):
       if fn in self.feature_label_candidates:
@@ -272,6 +328,9 @@ class SSLFLCyberSecurityProblem(SSLFLProblem):
     # exit()
 
   def remove_forbidden_features(self):
+    if len(self.forbidden_features) == 0:
+      return
+    
     f_idx = []
     for i, fn in enumerate(self.feature_names):
       if fn in self.forbidden_features:

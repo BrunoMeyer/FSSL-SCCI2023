@@ -4,3 +4,4 @@ cache/*
 *.pdf
 nohup.out
 tmp.out
+*.pickle

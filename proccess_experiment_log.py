@@ -24,10 +24,14 @@ def main():
   parser.add_argument('-f','--input_file', nargs='+', dest='input_file', help='List of input files',
                       type=str, required=True)
 
+  parser.add_argument('-o','--output_file', dest='output_file', help='output_file',
+                      type=str, required=False, default=None)
+
 
   parser.add_argument('-a', '--analysis', dest='analysis', type=str,
                       default='loss',
                       choices=[
+                        'meta',
                         'clients_gradient',
                         'loss',
                         'clients',
@@ -95,7 +99,12 @@ def main():
   #   },
   #   'data': log
   # }
+  if args.analysis == 'meta':
+    for input_file in args.input_file:
+      with open(input_file, "rb") as file_pi:
+        log = pickle.load(file_pi)
 
+      print(input_file, log['meta'])
   if args.analysis == 'clients_gradient':
     if len(args.input_file) == 1:
       input_file = args.input_file[0]
@@ -107,7 +116,6 @@ def main():
       client_id = 0
       log_clients_dataY = log['data']['log_clients_dataY']
 
-      # TODO: Cosine distance
       
       # for fold_id, fold_result in enumerate(log['data']['log_create_folds'][-1:]):
       for fold_id in [len(log['data']['log_create_folds'])-1]:
@@ -223,6 +231,8 @@ def main():
         # if fs > 0.1:
         #   fs_client_list.append(fs)
         fs_client_list.append(fs)
+      print('Mean: ', np.mean(fs_client_list))
+
 
       # fs_list.append(np.mean(fs_client_list))
       fs_list.append(fs_client_list)
@@ -234,12 +244,16 @@ def main():
 
     print(list(zip(n_clients_list, fs_list)))
     # ax.plot(n_clients_list, fs_list)
-
+    
     ax.boxplot(fs_list)
     ax.set_xticklabels(n_clients_list)
     # ax.yaxis.set_major_locator(plt.MaxNLocator(10))
     
-    plt.show()
+    if args.output_file is None:
+      plt.show()
+    else:
+      fig.savefig(args.output_file)
+    
 
   if args.analysis == 'clients_eval_reconstruct_test':
 

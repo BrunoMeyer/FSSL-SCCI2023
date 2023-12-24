@@ -34,15 +34,22 @@ import matplotlib.pyplot as plt
 
 import collections
 
-
 class SSLFLProblem(object):
-  def __init__(self, clients_dataX, trainX, trainY, testX, testY, clients_dataY=None):
+  def __init__(self, clients_dataX, trainX, trainY, testX, testY, clients_dataY=None, normalize_data = False):
     self.clients_dataX = clients_dataX
     self.clients_dataY = clients_dataY
     self.trainX = trainX
     self.trainY = trainY
     self.testX = testX
     self.testY = testY
+
+
+    if normalize_data:
+      scaler = Normalizer()
+      scaler.fit(np.concatenate((self.clients_dataX, self.clients_dataY, self.trainX, self.trainY, self.testX, self.testY)))
+      self.clients_dataX = scaler.transform(self.clients_dataX)
+      self.trainX = scaler.transform(self.trainX)
+      self.testX = scaler.transform(self.testX)
 
     self.data_type = type(self.trainX[0][0])
     self.input_shape = self.trainX.shape[1]
@@ -58,6 +65,7 @@ class SSLFLProblem(object):
       total_y = total_y.union(set(list(testY)))
 
     self.num_classes = len(set(total_y))
+    
 
   def report_metrics(self, ssl_fl_solution):
     y_pred = ssl_fl_solution.predict(self.testX)
@@ -235,16 +243,22 @@ class SSLFLProblem(object):
     self.testY = old_testY
 
 class RandomGeneratedProblem(SSLFLProblem):
-  def __init__(self):
-    n_clients = 10
-    X, y = make_classification(n_samples=1200, n_features=10,
-                               n_classes=5,
+  def __init__(self, n_clients = 10, n_samples=1200):
+    
+    X, y = make_classification(n_samples=n_samples, n_features=10,
+                               n_classes=2,
                                 n_informative=4, n_redundant=0,
-                                random_state=0, shuffle=False)
+                                random_state=0, shuffle=True)
     
     clients_dataX = []
     clients_dataY = []
-
+    
+    # X += abs(np.min(X))
+    
+    # scaler = MinMaxScaler()
+    # scaler.fit(X)
+    # X = scaler.transform(X)
+    
     skf = StratifiedKFold(n_splits=n_clients+2)
     
     for i, (train_index, test_index) in enumerate(skf.split(X, y)):
